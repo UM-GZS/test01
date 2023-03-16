@@ -1,0 +1,49 @@
+{
+  "pages": [
+    "pages/home/home",
+    "pages/task/task",
+    "pages/chat/chat",
+    "pages/mine/mine",
+    "pages/task/publish",
+    "pages/community/community",
+    "pages/task/detail",
+    "pages/verified/verified",
+    "pages/admin/admin",
+    "pages/admin/list",
+    "pages/chat/detail"
+  ],
+  "subPackages": [],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "互助社区",
+    "navigationBarBackgroundColor": "#FFFFFF",
+    "backgroundColor": "#F8F8F8"
+  },
+  "tabBar": {
+    "color": "#7A7E83",
+    "selectedColor": "#05C697",
+    "borderStyle": "black",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/home/home",
+        "iconPath": "static/images/tabBar/home.png",
+        "selectedIconPath": "static/images/tabBar/homes.png",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/chat/chat",
+        "iconPath": "static/images/tabBar/chat.png",
+        "selectedIconPath": "static/images/tabBar/chats.png",
+        "text": "聊天"
+      },
+      {
+        "pagePath": "pages/mine/mine",
+        "iconPath": "static/images/tabBar/mine.png",
+        "selectedIconPath": "static/images/tabBar/mines.png",
+        "text": "我的"
+      }
+    ]
+  },
+  "usingComponents": {}
+}

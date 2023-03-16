@@ -1,0 +1,99 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/home/home",
+			"style": {
+				"navigationBarTitleText": "首页"
+			}
+		}, {
+			"path": "pages/task/task",
+			"style": {
+				"navigationBarTitleText": "任务",
+				"enablePullDownRefresh": false
+			}
+		}, {
+			"path": "pages/chat/chat",
+			"style": {
+				"navigationBarTitleText": "聊天",
+				"enablePullDownRefresh": false
+			}
+		}, {
+			"path": "pages/mine/mine",
+			"style": {
+				"navigationBarTitleText": "我的",
+				"enablePullDownRefresh": false
+			}
+		}, {
+			"path": "pages/task/publish",
+			"style": {
+				"navigationBarTitleText": "发布需求",
+				"enablePullDownRefresh": false
+			}
+		}, {
+			"path": "pages/community/community",
+			"style": {
+				"navigationBarTitleText": "社区",
+				"enablePullDownRefresh": false
+			}
+		}, {
+			"path": "pages/task/detail",
+			"style": {
+				"navigationBarTitleText": "需求详情",
+				"enablePullDownRefresh": false
+			}
+		}, {
+			"path": "pages/verified/verified",
+			"style": {
+				"navigationBarTitleText": "实名认证",
+				"enablePullDownRefresh": false
+			}
+		}, {
+			"path": "pages/admin/admin",
+			"style": {
+				"navigationBarTitleText": "申请社区管理员",
+				"enablePullDownRefresh": false
+			}
+		}, {
+			"path": "pages/admin/list",
+			"style": {
+				"navigationBarTitleText": "申请列表",
+				"enablePullDownRefresh": false
+			}
+		}, {
+			"path": "pages/chat/detail",
+			"style": {
+				"navigationBarTitleText": "聊天",
+				"enablePullDownRefresh": false
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "互助社区",
+		"navigationBarBackgroundColor": "#FFFFFF",
+		"backgroundColor": "#F8F8F8"
+	},
+	"uniIdRouter": {},
+	"tabBar": {
+		"color": "#7A7E83",
+		"selectedColor": "#05C697",
+		"borderStyle": "black",
+		"backgroundColor": "#ffffff",
+		"list": [{
+			"pagePath": "pages/home/home",
+			"iconPath": "static/images/tabBar/home.png",
+			"selectedIconPath": "static/images/tabBar/homes.png",
+			"text": "首页"
+		}, {
+			"pagePath": "pages/chat/chat",
+			"iconPath": "static/images/tabBar/chat.png",
+			"selectedIconPath": "static/images/tabBar/chats.png",
+			"text": "聊天"
+		}, {
+			"pagePath": "pages/mine/mine",
+			"iconPath": "static/images/tabBar/mine.png",
+			"selectedIconPath": "static/images/tabBar/mines.png",
+			"text": "我的"
+		}]
+	}
+}
