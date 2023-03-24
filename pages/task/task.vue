@@ -2,12 +2,12 @@
 	<view>
 		<view class="tab">
 			<view class="tab-item" :class="{'active': tabIndx == index}" v-for="(item, index) in tabList" :key="index" @click="tabSelect(index)">
-				<text class="tab-name">{{item.name}}</text>
+				<text class="tab-name">{{item}}</text>
 				<text class="tab-line"></text>
 			</view>
 		</view>
 		<view class="list" v-show="dataList.length">
-			<view class="list-item" v-for="(item, index) in dataList" :key="index" @click="toDetail(item._id)" v-show="tabIndx == 1 && (item.uId == userInfo._openid)">
+			<view class="list-item" v-for="(item, index) in dataList" :key="index" @click="toDetail(item._id)">
 				<view class="list-icon">
 					<image src="../../static/images/common/task.png"></image>
 				</view>
@@ -32,48 +32,52 @@
 	export default {
 		data() {
 			return {
-				tabList: [{
-					name: '已发布',
-					key: 0
-				}, {
-					name: '已接单',
-					key: 2
-				}, {
-					name: '进行中',
-					key: 2
-				}, {
-					name: '已完成',
-					key: 3
-				}],
+				tabList: ['已发布', '进行中', '已完成'],
 				tabIndx: 0,
 				dataList: [],
-				userInfo: null
+				userInfo: null,
+				cId: null
 			}
 		},
 		onLoad(option) {
 			let user = uni.getStorageSync('userInfo');
 			this.userInfo = user;
-			if (option.key) {
-				this.tabIndx = option.key;
-				this.getList();
-			}
+			this.tabIndx = Number(option.key);
+			this.cId = option.cId == 'null' ? null : option.cId;
+		},
+		onShow() {
+			if (this.cId) this.getData();
+			else this.getList();
 		},
 		methods: {
 			getList() {
-				let state = this.tabList[this.tabIndx].key;
 				wx.cloud.callFunction({
 					name: 'order',
 					data: {
 						funName: 'getData',
-						state: state
+						state: this.tabIndx
+					}
+				}).then(res => {
+					this.dataList = res.result;
+				}).catch(console.error)
+			},
+			getData() {
+				wx.cloud.callFunction({
+					name: 'order',
+					data: {
+						funName: 'getCurrent',
+						state: this.tabIndx,
+						cId: this.cId
 					}
 				}).then(res => {
 					this.dataList = res.result;
 				}).catch(console.error)
 			},
 			tabSelect(index) {
+				if (this.tabIndx == index) return;
 				this.tabIndx = index;
-				this.getList();
+				if (this.cId) this.getData();
+				else this.getList();
 			},
 			toDetail(id) {
 				uni.navigateTo({

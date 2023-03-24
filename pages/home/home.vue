@@ -3,7 +3,7 @@
 		<view class="banner">
 			<swiper class="swiper" circular :autoplay="autoplay" :interval="interval" :duration="duration">
 				<swiper-item>
-					<image src="../../static/images/common/banner.jpeg"></image>
+					<image src="../../static/images/common/banner.png"></image>
 				</swiper-item>
 			</swiper>
 		</view>
@@ -17,14 +17,18 @@
 			</view>
 		</view>
 		<view class="list">
-			<view class="list-item" v-for="(item, index) in dataList" :key="index" @click="toCommunity(item)">
+			<view class="list-item" v-for="(item, index) in dataList" :key="index" @click="toCommunity(item._id)">
 				<view class="list-area">{{item.area}}</view>
-				<image :src="item.image"></image>
+				<image :src="item.image" mode="aspectFill"></image>
 				<view class="list-info">
 					<text class="list-name">{{item.name}}</text>
 					<view class="list-button">详情</view>
 				</view>
 			</view>
+		</view>
+		<view class="null" v-show="!dataList.length">
+			<image src="../../static/images/common/null.png"></image>
+			<text>暂无数据</text>
 		</view>
 	</view>
 </template>
@@ -81,72 +85,14 @@
 					url: '/pages/task/publish'
 				})
 			},
-			toCommunity(item) {
+			toCommunity(id) {
 				if (!this.userInfo) return uni.showToast({
 					title: '请先登录账号',
 					icon: 'none'
 				})
-				wx.cloud.callFunction({
-					name: 'community',
-					data: {
-						funName: 'checkUser',
-						cId: item._id
-					}
-				}).then(res => {
-					let obj = res.result;
-					if (obj.aId) {
-						if (obj.state == 0) {
-							return uni.showToast({
-								title: '审核中...',
-								icon: 'none'
-							})
-						}
-						if (obj.state == 2) {
-							return uni.showToast({
-								title: '审核不通过',
-								icon: 'none'
-							})
-						}
-						uni.navigateTo({
-							url: '/pages/community/community?id=' + item._id
-						})
-					} else {
-						uni.showModal({
-							title: '提示',
-							content: '您还没有加入社区，是否申请加入？',
-							success: (res) => {
-								if (res.confirm) {
-									this.joinCommunity(item);
-								} else if (res.cancel) {
-									console.log('用户点击取消');
-								}
-							}
-						});
-					}
-				}).catch(console.error)
-			},
-			joinCommunity(item) {
-				uni.showLoading({
-					title: '请求中...'
+				uni.navigateTo({
+					url: '/pages/community/community?id=' + id
 				})
-				wx.cloud.callFunction({
-					name: 'community',
-					data: {
-						funName: 'joinCommunity',
-						cId: item._id,
-						uId: item._openid,
-						aName: this.userInfo.nickName,
-						aAvatar: this.userInfo.avatarUrl
-					}
-				}).then(res => {
-					uni.hideLoading();
-					if (res.result) {
-						uni.showToast({
-							title: '提交成功',
-							icon: 'none'
-						})
-					}
-				}).catch(console.error)
 			}
 		}
 	}
@@ -265,6 +211,26 @@
 					border-radius: 10rpx;
 				}
 			}
+		}
+	}
+	
+	.null {
+		width: 100%;
+		height: 500rpx;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+	
+		image {
+			width: 90rpx;
+			height: 90rpx;
+		}
+	
+		text {
+			padding-top: 20rpx;
+			font-size: 30rpx;
+			color: #C1BEC1;
 		}
 	}
 </style>

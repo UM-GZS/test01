@@ -83,7 +83,7 @@ page {
   color: #333333;
 }
 .content .content-text {
-  margin: 40rpx 0;
+  margin: 40rpx 0 20rpx;
   padding: 20rpx;
   background: #F8F8F8;
   font-size: 30rpx;
@@ -111,7 +111,6 @@ page {
   width: 100%;
   font-size: 30rpx;
   color: #333333;
-  border-bottom: 1px solid #F8F8F8;
 }
 .null {
   width: 100%;

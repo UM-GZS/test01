@@ -8,7 +8,7 @@
 		}, {
 			"path": "pages/task/task",
 			"style": {
-				"navigationBarTitleText": "任务",
+				"navigationBarTitleText": "订单",
 				"enablePullDownRefresh": false
 			}
 		}, {
@@ -38,7 +38,7 @@
 		}, {
 			"path": "pages/task/detail",
 			"style": {
-				"navigationBarTitleText": "需求详情",
+				"navigationBarTitleText": "订单详情",
 				"enablePullDownRefresh": false
 			}
 		}, {
@@ -56,13 +56,25 @@
 		}, {
 			"path": "pages/admin/list",
 			"style": {
-				"navigationBarTitleText": "申请列表",
+				"navigationBarTitleText": "社区成员",
 				"enablePullDownRefresh": false
 			}
 		}, {
 			"path": "pages/chat/detail",
 			"style": {
 				"navigationBarTitleText": "聊天",
+				"enablePullDownRefresh": false
+			}
+		}, {
+			"path": "pages/mine/detail",
+			"style": {
+				"navigationBarTitleText": "个人信息",
+				"enablePullDownRefresh": false
+			}
+		}, {
+			"path": "pages/info/info",
+			"style": {
+				"navigationBarTitleText": "用户简介",
 				"enablePullDownRefresh": false
 			}
 		}

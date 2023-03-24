@@ -5,18 +5,18 @@
 				<view class="chat-body">
 					<view class="user-chat-time" v-if="item.getTime">{{item.getTime}}</view>
 					<view class="user-chat-list" :class="{'user-chat-me': item.isme}">
-						<image v-if="!item.isme" :src="item.userpic" mode="widthFix" lazy-load></image>
+						<image v-if="!item.isme" :src="item.sAvatar" mode="widthFix" lazy-load @click="toUser(item.sId)"></image>
 						<view class="user-chat-list-body">
 							<text v-if="item.type == 'text'">{{item.data}}</text>
-							<image v-if="item.type == 'img'" :src="item.userpic" mode="widthFix" lazy-load></image>
+							<image v-if="item.type == 'img'" :src="item.sAvatar" mode="widthFix" lazy-load></image>
 						</view>
-						<image v-if="item.isme" :src="item.userpic" mode="widthFix" lazy-load></image>
+						<image v-if="item.isme" :src="item.sAvatar" mode="widthFix" lazy-load @click="toUser(item.sId)"></image>
 					</view>
 				</view>
 			</block>
 		</scroll-view>
 		<view class="chat-bottom">
-			<input type="text" placeholder="请输入内容" v-model="text" />
+			<input type="text" placeholder="请输入内容" v-model="text" always-embed="true" adjust-position="true" cursor-spacing="18" />
 			<view class="chat-bottom-submit" @tap="submit">发送</view>
 		</view>
 	</view>
@@ -24,6 +24,8 @@
 
 <script>
 	import utils from '../../utils/index.js'
+	const db = wx.cloud.database();
+	const watcher = db.collection('message');
 	export default {
 		data() {
 			return {
@@ -34,113 +36,133 @@
 					itemH: 0
 				},
 				text: '',
-				tId: 'olFpX5FC5UoImTj1ZHD4oHRD7DV0',
+				cId: null,
+				tId: null,
+				tName: '',
+				tAvatar: '',
 				userInfo: null
 			};
 		},
 		onLoad(option) {
 			let user = uni.getStorageSync('userInfo');
 			this.userInfo = user;
-			this.getChat();
-			this.getData();
-			this.initData();
-		},
-		onReady() {
-			this.pageToBottom();
+			this.tName = option.tName || '';
+			this.tAvatar = option.tAvatar || '';
+			this.cId = option.cId || null;
+			this.tId = option.tId || null;
+			if (this.userInfo._openid == this.tId) {
+				uni.showToast({
+					title: '不能与自己聊天',
+					icon: 'none'
+				})
+				setTimeout(() => {
+					uni.navigateBack();
+				}, 2000)
+				return;
+			}
+			if (option.cId) this.getMessage();
+			else this.getChat();
 		},
 		methods: {
+			initData() {
+				try {
+					const res = uni.getSystemInfoSync();
+					this.style.contentH = res.windowHeight - uni.upx2px(140);
+				} catch (e) {
+					console.log(e);
+				}
+			},
 			getChat() {
 				wx.cloud.callFunction({
 					name: 'chat',
 					data: {
-						funName: 'getMessage',
-						tId: this.tId
+						funName: 'getChat',
+						tId: this.tId,
+						tName: this.tName,
+						tAvatar: this.tAvatar,
+						sName: this.userInfo.nickName,
+						sAvatar: this.userInfo.avatarUrl
 					}
 				}).then(res => {
-					this.list = res.result;
-					// for (var i = 0; i < arr.length; i++) {
-					// 	arr[i].getTime = utils.parsetime(arr[i].time);
-					// }
+					let resData = res.result;
+					if (resData) {
+						this.cId = resData._id;
+						this.getMessage();
+					}
 				}).catch(console.error)
 			},
-			getData() {
-				let arr = [{
-						isme: false,
-						userpic: "../../static/logo.png",
-						type: "img",
-						data: "../../static/logo.png",
-						time: "1590367384",
-						getTime: "",
-					},
-					{
-						isme: true,
-						userpic: "../../static/logo.png",
-						type: "text",
-						data: "哈哈哈",
-						time: "1590413613",
-						getTime: "",
-					},
-					{
-						isme: false,
-						userpic: "../../static/logo.png",
-						type: "text",
-						data: "哈哈哈",
-						time: "1587775384",
-						getTime: "",
-					},
-					{
-						isme: true,
-						userpic: "../../static/logo.png",
-						type: "img",
-						data: "../../static/logo.png",
-						time: "1590458109",
-						getTime: "",
-					}
-				]
-				for (var i = 0; i < arr.length; i++) {
-					arr[i].getTime = utils.parsetime(arr[i].time);
-				}
-				this.list = arr
+			toUser(id) {
+				uni.navigateTo({
+					url: `/pages/info/info?id=${id}`
+				})
 			},
-			initData() {
-				try {
-					const res = uni.getSystemInfoSync();
-					this.style.contentH = res.windowHeight - uni.upx2px(120);
-				} catch (e) {
-					console.log(e)
-				}
+			getMessage() {
+				wx.cloud.callFunction({
+					name: 'chat',
+					data: {
+						funName: 'getMessage',
+						cId: this.cId
+					}
+				}).then(res => {
+					let resData = res.result;
+					if (resData.length) {
+						resData.forEach((item, index) => {
+							item.getTime = index ? utils.getChatTime(item.time, resData[index - 1]['time']) : utils.parsetime(item.time);
+							item.isme = this.userInfo._openid == item.sId ? true : false
+						})
+						this.list = resData;
+						this.initData();
+						setTimeout(() => {
+							this.pageToBottom();
+						}, 500)
+						this.watchMessage();
+					}
+				}).catch(console.error)
+			},
+			watchMessage() {
+				watcher.where({
+					cId: this.cId,
+					sId: this.tId
+				}).watch({
+					onChange: (res) => {
+						if (res.type == 'init') return;
+						this.list.push(res.docChanges[0].doc);
+						this.initData();
+					},
+					onError: (err) => {
+						console.error('the watch closed because of error', err)
+					}
+				})
 			},
 			submit() {
 				if (!this.text) return;
 				let now = new Date().getTime();
+				let index = this.list.length - 1;
 				let obj = {
-					isme: true,
-					userpic: "../../static/logo.png",
-					type: "text",
+					cId: this.cId,
+					tId: this.tId,
+					sName: this.userInfo.nickName,
+					sAvatar: this.userInfo.avatarUrl,
 					data: this.text,
-					time: now,
-					getTime: utils.getChatTime(now, this.list[this.list.length - 1].time)
+					type: 'text',
+					time: now 
 				}
 				wx.cloud.callFunction({
 					name: 'chat',
 					data: {
 						funName: 'addMessage',
-						tId: this.tId,
-						fName: this.userInfo.nickName,
-						userpic: this.userInfo.avatarUrl,
-						data: this.text,
-						type: 'text',
-						time: now,
-						getTime: utils.getChatTime(now, this.list[this.list.length - 1].time)
+						...obj
 					}
 				}).then(res => {
 					if (res.result) {
 						this.text = '';
-						this.pageToBottom();
 					}
 				}).catch(console.error)
-				// this.list.push(obj);
-				// this.pageToBottom();
+				obj.getTime = this.list.length ? utils.getChatTime(now, this.list[index].time) : utils.parsetime(now);
+				obj.isme = true;
+				this.list.push(obj);
+				this.initData();
+				this.pageToBottom();
 			},
 			pageToBottom() {
 				let q = uni.createSelectorQuery();
@@ -148,10 +170,10 @@
 				q.selectAll('.chat-body').boundingClientRect();
 				q.exec((res) => {
 					res[1].forEach((ret) => {
-						this.style.itemH += ret.height
+						this.style.itemH += ret.height;
 					})
 					if (this.style.itemH > this.style.contentH) {
-						this.scrollTop = this.style.itemH
+						this.scrollTop = this.style.itemH;
 					}
 				})
 			},

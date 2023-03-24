@@ -1543,7 +1543,7 @@ function initData(vueOptions, context) {
     try {
       data = data.call(context); // 支持 Vue.prototype 上挂的数据
     } catch (e) {
-      if (Object({"VUE_APP_DARK_MODE":"false","VUE_APP_NAME":"community","VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}).VUE_APP_DEBUG) {
+      if (Object({"NODE_ENV":"development","VUE_APP_DARK_MODE":"false","VUE_APP_NAME":"community","VUE_APP_PLATFORM":"mp-weixin","BASE_URL":"/"}).VUE_APP_DEBUG) {
         console.warn('根据 Vue 的 data 函数初始化小程序 data 失败，请尽量确保 data 函数中不访问 vm 对象，否则可能影响首次数据渲染速度。', data);
       }
     }
@@ -8897,7 +8897,7 @@ function type(obj) {
 
 function flushCallbacks$1(vm) {
     if (vm.__next_tick_callbacks && vm.__next_tick_callbacks.length) {
-        if (Object({"VUE_APP_DARK_MODE":"false","VUE_APP_NAME":"community","VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}).VUE_APP_DEBUG) {
+        if (Object({"NODE_ENV":"development","VUE_APP_DARK_MODE":"false","VUE_APP_NAME":"community","VUE_APP_PLATFORM":"mp-weixin","BASE_URL":"/"}).VUE_APP_DEBUG) {
             var mpInstance = vm.$scope;
             console.log('[' + (+new Date) + '][' + (mpInstance.is || mpInstance.route) + '][' + vm._uid +
                 ']:flushCallbacks[' + vm.__next_tick_callbacks.length + ']');
@@ -8918,14 +8918,14 @@ function nextTick$1(vm, cb) {
     //1.nextTick 之前 已 setData 且 setData 还未回调完成
     //2.nextTick 之前存在 render watcher
     if (!vm.__next_tick_pending && !hasRenderWatcher(vm)) {
-        if(Object({"VUE_APP_DARK_MODE":"false","VUE_APP_NAME":"community","VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}).VUE_APP_DEBUG){
+        if(Object({"NODE_ENV":"development","VUE_APP_DARK_MODE":"false","VUE_APP_NAME":"community","VUE_APP_PLATFORM":"mp-weixin","BASE_URL":"/"}).VUE_APP_DEBUG){
             var mpInstance = vm.$scope;
             console.log('[' + (+new Date) + '][' + (mpInstance.is || mpInstance.route) + '][' + vm._uid +
                 ']:nextVueTick');
         }
         return nextTick(cb, vm)
     }else{
-        if(Object({"VUE_APP_DARK_MODE":"false","VUE_APP_NAME":"community","VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}).VUE_APP_DEBUG){
+        if(Object({"NODE_ENV":"development","VUE_APP_DARK_MODE":"false","VUE_APP_NAME":"community","VUE_APP_PLATFORM":"mp-weixin","BASE_URL":"/"}).VUE_APP_DEBUG){
             var mpInstance$1 = vm.$scope;
             console.log('[' + (+new Date) + '][' + (mpInstance$1.is || mpInstance$1.route) + '][' + vm._uid +
                 ']:nextMPTick');
@@ -9021,7 +9021,7 @@ var patch = function(oldVnode, vnode) {
     });
     var diffData = this.$shouldDiffData === false ? data : diff(data, mpData);
     if (Object.keys(diffData).length) {
-      if (Object({"VUE_APP_DARK_MODE":"false","VUE_APP_NAME":"community","VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}).VUE_APP_DEBUG) {
+      if (Object({"NODE_ENV":"development","VUE_APP_DARK_MODE":"false","VUE_APP_NAME":"community","VUE_APP_PLATFORM":"mp-weixin","BASE_URL":"/"}).VUE_APP_DEBUG) {
         console.log('[' + (+new Date) + '][' + (mpInstance.is || mpInstance.route) + '][' + this._uid +
           ']差量更新',
           JSON.stringify(diffData));
@@ -9606,7 +9606,57 @@ function normalizeComponent (
 /* 52 */,
 /* 53 */,
 /* 54 */,
-/* 55 */,
+/* 55 */
+/*!***********************************************!*\
+  !*** E:/item/uniapp/community/utils/index.js ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var parseTime = {
+  getChatTime: function getChatTime(newT, oldT) {
+    newT = newT.toString().length < 13 ? newT * 1000 : newT;
+    oldT = oldT.toString().length < 13 ? oldT * 1000 : oldT;
+    if ((newT - oldT) / 1000 > 300) {
+      return this.parsetime(newT);
+    }
+  },
+  //将时间戳转换成正常时间格式
+  parsetime: function parsetime(timestamp) {
+    timestamp = timestamp.toString().length < 13 ? timestamp * 1000 : timestamp;
+    var date = new Date(timestamp); //时间戳为10位需*1000，时间戳为13位的话不需乘1000
+    var nowDate = new Date();
+    var nowTime = new Date().getTime();
+    var Y = date.getFullYear() + '-';
+    var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+    var D = date.getDate() + ' ';
+    var h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
+    var m = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
+    var s = date.getSeconds();
+    if (nowTime - date < 86400000) {
+      if (date.getDay() !== nowDate.getDay()) {
+        return "昨天" + h + m;
+      }
+      return h + m;
+    } else if (nowTime - date < 604800000) {
+      var a = ["日", "一", "二", "三", "四", "五", "六"];
+      return "星期" + a[date.getDay()] + h + m;
+    } else {
+      return Y + M + D + h + m;
+    }
+  }
+};
+var _default = parseTime;
+exports.default = _default;
+
+/***/ }),
 /* 56 */,
 /* 57 */,
 /* 58 */,
@@ -9670,57 +9720,7 @@ function normalizeComponent (
 /* 116 */,
 /* 117 */,
 /* 118 */,
-/* 119 */
-/*!***********************************************!*\
-  !*** E:/item/uniapp/community/utils/index.js ***!
-  \***********************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-var parseTime = {
-  getChatTime: function getChatTime(newT, oldT) {
-    newT = newT.toString().length < 13 ? newT * 1000 : newT;
-    oldT = oldT.toString().length < 13 ? oldT * 1000 : oldT;
-    if ((newT - oldT) / 1000 > 300) {
-      return this.parsetime(newT);
-    }
-  },
-  //将时间戳转换成正常时间格式
-  parsetime: function parsetime(timestamp) {
-    timestamp = timestamp.toString().length < 13 ? timestamp * 1000 : timestamp;
-    var date = new Date(timestamp); //时间戳为10位需*1000，时间戳为13位的话不需乘1000
-    var nowDate = new Date();
-    var nowTime = new Date().getTime();
-    var Y = date.getFullYear() + '-';
-    var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
-    var D = date.getDate() + ' ';
-    var h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
-    var m = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
-    var s = date.getSeconds();
-    if (nowTime - date < 86400000) {
-      if (date.getDay() !== nowDate.getDay()) {
-        return "昨天" + h + m;
-      }
-      return h + m;
-    } else if (nowTime - date < 604800000) {
-      var a = ["日", "一", "二", "三", "四", "五", "六"];
-      return "星期" + a[date.getDay()] + h + m;
-    } else {
-      return Y + M + D + h + m;
-    }
-  }
-};
-var _default = parseTime;
-exports.default = _default;
-
-/***/ }),
+/* 119 */,
 /* 120 */,
 /* 121 */,
 /* 122 */,
@@ -9735,7 +9735,23 @@ exports.default = _default;
 /* 131 */,
 /* 132 */,
 /* 133 */,
-/* 134 */
+/* 134 */,
+/* 135 */,
+/* 136 */,
+/* 137 */,
+/* 138 */,
+/* 139 */,
+/* 140 */,
+/* 141 */,
+/* 142 */,
+/* 143 */,
+/* 144 */,
+/* 145 */,
+/* 146 */,
+/* 147 */,
+/* 148 */,
+/* 149 */,
+/* 150 */
 /*!************************************************************************************!*\
   !*** E:/item/uniapp/community/uni_modules/uni-popup/components/uni-popup/popup.js ***!
   \************************************************************************************/
@@ -9776,7 +9792,7 @@ var _default = {
 exports.default = _default;
 
 /***/ }),
-/* 135 */
+/* 151 */
 /*!*****************************************************************************************!*\
   !*** E:/item/uniapp/community/uni_modules/uni-popup/components/uni-popup/i18n/index.js ***!
   \*****************************************************************************************/
@@ -9791,9 +9807,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _en = _interopRequireDefault(__webpack_require__(/*! ./en.json */ 136));
-var _zhHans = _interopRequireDefault(__webpack_require__(/*! ./zh-Hans.json */ 137));
-var _zhHant = _interopRequireDefault(__webpack_require__(/*! ./zh-Hant.json */ 138));
+var _en = _interopRequireDefault(__webpack_require__(/*! ./en.json */ 152));
+var _zhHans = _interopRequireDefault(__webpack_require__(/*! ./zh-Hans.json */ 153));
+var _zhHant = _interopRequireDefault(__webpack_require__(/*! ./zh-Hant.json */ 154));
 var _default = {
   en: _en.default,
   'zh-Hans': _zhHans.default,
@@ -9802,7 +9818,7 @@ var _default = {
 exports.default = _default;
 
 /***/ }),
-/* 136 */
+/* 152 */
 /*!****************************************************************************************!*\
   !*** E:/item/uniapp/community/uni_modules/uni-popup/components/uni-popup/i18n/en.json ***!
   \****************************************************************************************/
@@ -9812,7 +9828,7 @@ exports.default = _default;
 module.exports = JSON.parse("{\"uni-popup.cancel\":\"cancel\",\"uni-popup.ok\":\"ok\",\"uni-popup.placeholder\":\"pleace enter\",\"uni-popup.title\":\"Hint\",\"uni-popup.shareTitle\":\"Share to\"}");
 
 /***/ }),
-/* 137 */
+/* 153 */
 /*!*********************************************************************************************!*\
   !*** E:/item/uniapp/community/uni_modules/uni-popup/components/uni-popup/i18n/zh-Hans.json ***!
   \*********************************************************************************************/
@@ -9822,7 +9838,7 @@ module.exports = JSON.parse("{\"uni-popup.cancel\":\"cancel\",\"uni-popup.ok\":\
 module.exports = JSON.parse("{\"uni-popup.cancel\":\"取消\",\"uni-popup.ok\":\"确定\",\"uni-popup.placeholder\":\"请输入\",\"uni-popup.title\":\"提示\",\"uni-popup.shareTitle\":\"分享到\"}");
 
 /***/ }),
-/* 138 */
+/* 154 */
 /*!*********************************************************************************************!*\
   !*** E:/item/uniapp/community/uni_modules/uni-popup/components/uni-popup/i18n/zh-Hant.json ***!
   \*********************************************************************************************/
@@ -9832,21 +9848,28 @@ module.exports = JSON.parse("{\"uni-popup.cancel\":\"取消\",\"uni-popup.ok\":\
 module.exports = JSON.parse("{\"uni-popup.cancel\":\"取消\",\"uni-popup.ok\":\"確定\",\"uni-popup.placeholder\":\"請輸入\",\"uni-popup.title\":\"提示\",\"uni-popup.shareTitle\":\"分享到\"}");
 
 /***/ }),
-/* 139 */,
-/* 140 */,
-/* 141 */,
-/* 142 */,
-/* 143 */,
-/* 144 */,
-/* 145 */,
-/* 146 */,
-/* 147 */,
-/* 148 */,
-/* 149 */,
-/* 150 */,
-/* 151 */,
-/* 152 */,
-/* 153 */
+/* 155 */,
+/* 156 */,
+/* 157 */,
+/* 158 */,
+/* 159 */,
+/* 160 */,
+/* 161 */,
+/* 162 */,
+/* 163 */,
+/* 164 */,
+/* 165 */,
+/* 166 */,
+/* 167 */,
+/* 168 */,
+/* 169 */,
+/* 170 */,
+/* 171 */,
+/* 172 */,
+/* 173 */,
+/* 174 */,
+/* 175 */,
+/* 176 */
 /*!************************************************************************************!*\
   !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/uni-cloud/dist/index.js ***!
   \************************************************************************************/
@@ -9861,20 +9884,20 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 154));
+var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 177));
 var _slicedToArray2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/slicedToArray */ 5));
 var _typeof2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/typeof */ 13));
 var _toConsumableArray2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ 18));
-var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 156));
+var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 179));
 var _defineProperty2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/defineProperty */ 11));
 var _classCallCheck2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ 23));
 var _createClass2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/createClass */ 24));
-var _inherits2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/inherits */ 157));
-var _possibleConstructorReturn2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/possibleConstructorReturn */ 158));
-var _getPrototypeOf2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/getPrototypeOf */ 160));
-var _wrapNativeSuper2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/wrapNativeSuper */ 161));
+var _inherits2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/inherits */ 180));
+var _possibleConstructorReturn2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/possibleConstructorReturn */ 181));
+var _getPrototypeOf2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/getPrototypeOf */ 183));
+var _wrapNativeSuper2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/wrapNativeSuper */ 184));
 var _uniI18n = __webpack_require__(/*! @dcloudio/uni-i18n */ 22);
-var _pages = _interopRequireDefault(__webpack_require__(/*! @/pages.json */ 163));
+var _pages = _interopRequireDefault(__webpack_require__(/*! @/pages.json */ 186));
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e33) { throw _e33; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e34) { didErr = true; err = _e34; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
@@ -10290,7 +10313,7 @@ var y = "development" === "development",
 var T = "";
 try {
   {
-    var _e2 = __webpack_require__(/*! uni-stat-config */ 164).default || __webpack_require__(/*! uni-stat-config */ 164);
+    var _e2 = __webpack_require__(/*! uni-stat-config */ 187).default || __webpack_require__(/*! uni-stat-config */ 187);
     T = _e2.appid;
   }
 } catch (e) {}
@@ -16756,7 +16779,7 @@ exports.default = Ps;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../../webpack/buildin/global.js */ 3), __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"], __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/wx.js */ 1)["default"]))
 
 /***/ }),
-/* 154 */
+/* 177 */
 /*!************************************************************************************************!*\
   !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/@babel/runtime/regenerator/index.js ***!
   \************************************************************************************************/
@@ -16765,11 +16788,11 @@ exports.default = Ps;
 
 // TODO(Babel 8): Remove this file.
 
-var runtime = __webpack_require__(/*! @babel/runtime/helpers/regeneratorRuntime */ 155)();
+var runtime = __webpack_require__(/*! @babel/runtime/helpers/regeneratorRuntime */ 178)();
 module.exports = runtime;
 
 /***/ }),
-/* 155 */
+/* 178 */
 /*!*******************************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/regeneratorRuntime.js ***!
   \*******************************************************************/
@@ -17090,7 +17113,7 @@ function _regeneratorRuntime() {
 module.exports = _regeneratorRuntime, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ }),
-/* 156 */
+/* 179 */
 /*!*****************************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/asyncToGenerator.js ***!
   \*****************************************************************/
@@ -17130,7 +17153,7 @@ function _asyncToGenerator(fn) {
 module.exports = _asyncToGenerator, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ }),
-/* 157 */
+/* 180 */
 /*!*********************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/inherits.js ***!
   \*********************************************************/
@@ -17157,7 +17180,7 @@ function _inherits(subClass, superClass) {
 module.exports = _inherits, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ }),
-/* 158 */
+/* 181 */
 /*!**************************************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/possibleConstructorReturn.js ***!
   \**************************************************************************/
@@ -17165,7 +17188,7 @@ module.exports = _inherits, module.exports.__esModule = true, module.exports["de
 /***/ (function(module, exports, __webpack_require__) {
 
 var _typeof = __webpack_require__(/*! ./typeof.js */ 13)["default"];
-var assertThisInitialized = __webpack_require__(/*! ./assertThisInitialized.js */ 159);
+var assertThisInitialized = __webpack_require__(/*! ./assertThisInitialized.js */ 182);
 function _possibleConstructorReturn(self, call) {
   if (call && (_typeof(call) === "object" || typeof call === "function")) {
     return call;
@@ -17177,7 +17200,7 @@ function _possibleConstructorReturn(self, call) {
 module.exports = _possibleConstructorReturn, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ }),
-/* 159 */
+/* 182 */
 /*!**********************************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/assertThisInitialized.js ***!
   \**********************************************************************/
@@ -17193,7 +17216,7 @@ function _assertThisInitialized(self) {
 module.exports = _assertThisInitialized, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ }),
-/* 160 */
+/* 183 */
 /*!***************************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/getPrototypeOf.js ***!
   \***************************************************************/
@@ -17209,16 +17232,16 @@ function _getPrototypeOf(o) {
 module.exports = _getPrototypeOf, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ }),
-/* 161 */
+/* 184 */
 /*!****************************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/wrapNativeSuper.js ***!
   \****************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getPrototypeOf = __webpack_require__(/*! ./getPrototypeOf.js */ 160);
+var getPrototypeOf = __webpack_require__(/*! ./getPrototypeOf.js */ 183);
 var setPrototypeOf = __webpack_require__(/*! ./setPrototypeOf.js */ 16);
-var isNativeFunction = __webpack_require__(/*! ./isNativeFunction.js */ 162);
+var isNativeFunction = __webpack_require__(/*! ./isNativeFunction.js */ 185);
 var construct = __webpack_require__(/*! ./construct.js */ 15);
 function _wrapNativeSuper(Class) {
   var _cache = typeof Map === "function" ? new Map() : undefined;
@@ -17249,7 +17272,7 @@ function _wrapNativeSuper(Class) {
 module.exports = _wrapNativeSuper, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ }),
-/* 162 */
+/* 185 */
 /*!*****************************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/isNativeFunction.js ***!
   \*****************************************************************/
@@ -17262,7 +17285,7 @@ function _isNativeFunction(fn) {
 module.exports = _isNativeFunction, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ }),
-/* 163 */
+/* 186 */
 /*!************************************************************************!*\
   !*** E:/item/uniapp/community/pages.json?{"type":"origin-pages-json"} ***!
   \************************************************************************/
@@ -17285,7 +17308,7 @@ var _default = {
   }, {
     "path": "pages/task/task",
     "style": {
-      "navigationBarTitleText": "任务",
+      "navigationBarTitleText": "订单",
       "enablePullDownRefresh": false
     }
   }, {
@@ -17315,7 +17338,7 @@ var _default = {
   }, {
     "path": "pages/task/detail",
     "style": {
-      "navigationBarTitleText": "需求详情",
+      "navigationBarTitleText": "订单详情",
       "enablePullDownRefresh": false
     }
   }, {
@@ -17333,13 +17356,25 @@ var _default = {
   }, {
     "path": "pages/admin/list",
     "style": {
-      "navigationBarTitleText": "申请列表",
+      "navigationBarTitleText": "社区成员",
       "enablePullDownRefresh": false
     }
   }, {
     "path": "pages/chat/detail",
     "style": {
       "navigationBarTitleText": "聊天",
+      "enablePullDownRefresh": false
+    }
+  }, {
+    "path": "pages/mine/detail",
+    "style": {
+      "navigationBarTitleText": "个人信息",
+      "enablePullDownRefresh": false
+    }
+  }, {
+    "path": "pages/info/info",
+    "style": {
+      "navigationBarTitleText": "用户简介",
       "enablePullDownRefresh": false
     }
   }],
@@ -17376,7 +17411,7 @@ var _default = {
 exports.default = _default;
 
 /***/ }),
-/* 164 */
+/* 187 */
 /*!***********************************************************!*\
   !*** E:/item/uniapp/community/pages.json?{"type":"stat"} ***!
   \***********************************************************/
@@ -17396,7 +17431,7 @@ var _default = {
 exports.default = _default;
 
 /***/ }),
-/* 165 */
+/* 188 */
 /*!*****************************************************************************************************************!*\
   !*** E:/item/uniapp/community/uni_modules/uni-file-picker/components/uni-file-picker/choose-and-upload-file.js ***!
   \*****************************************************************************************************************/
@@ -17608,10 +17643,10 @@ function chooseAndUploadFile() {
   }
   return uploadFiles(chooseAll(opts), opts);
 }
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"], __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/wx.js */ 1)["default"], __webpack_require__(/*! ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/uni-cloud/dist/index.js */ 153)["default"]))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"], __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/wx.js */ 1)["default"], __webpack_require__(/*! ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/uni-cloud/dist/index.js */ 176)["default"]))
 
 /***/ }),
-/* 166 */
+/* 189 */
 /*!************************************************************************************************!*\
   !*** E:/item/uniapp/community/uni_modules/uni-file-picker/components/uni-file-picker/utils.js ***!
   \************************************************************************************************/
@@ -17626,8 +17661,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.get_files_and_is_max = exports.get_file_info = exports.get_file_ext = exports.get_file_data = exports.get_extname = void 0;
-var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 154));
-var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 156));
+var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 177));
+var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 179));
 /**
  * 获取文件名和后缀
  * @param {String} name
@@ -17774,21 +17809,14 @@ exports.get_file_data = get_file_data;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
 
 /***/ }),
-/* 167 */,
-/* 168 */,
-/* 169 */,
-/* 170 */,
-/* 171 */,
-/* 172 */,
-/* 173 */,
-/* 174 */,
-/* 175 */,
-/* 176 */,
-/* 177 */,
-/* 178 */,
-/* 179 */,
-/* 180 */,
-/* 181 */
+/* 190 */,
+/* 191 */,
+/* 192 */,
+/* 193 */,
+/* 194 */,
+/* 195 */,
+/* 196 */,
+/* 197 */
 /*!********************************************************************************************************!*\
   !*** E:/item/uniapp/community/uni_modules/uni-transition/components/uni-transition/createAnimation.js ***!
   \********************************************************************************************************/
@@ -17921,12 +17949,12 @@ function createAnimation(option, _this) {
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
 
 /***/ }),
-/* 182 */,
-/* 183 */,
-/* 184 */,
-/* 185 */,
-/* 186 */,
-/* 187 */
+/* 198 */,
+/* 199 */,
+/* 200 */,
+/* 201 */,
+/* 202 */,
+/* 203 */
 /*!************************************************************************************!*\
   !*** E:/item/uniapp/community/uni_modules/uni-icons/components/uni-icons/icons.js ***!
   \************************************************************************************/

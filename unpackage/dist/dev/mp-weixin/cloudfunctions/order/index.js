@@ -24,12 +24,12 @@ var functions = {
 			content: data.content,
 			time: data.time,
 			pId: openid,
-			pNmae: data.pNmae,
+			pName: data.pName,
+			pAvatar: data.pAvatar,
 			cId: data.cId,
 			state: 0,
 			pTime: pTime,
 			jTime: '-',
-			oTime: '-',
 			fTime: '-'
 		}
 		return db.collection('order').add({ data: reqData }).then(res => {
@@ -53,10 +53,11 @@ var functions = {
 		let forTime = new Date().toLocaleString('chinese', { hour12: false });
 		return db.collection('order').where({ _id: data.id }).update({
 			data: {
-				state: 2,
-				oTime: forTime,
+				state: 1,
 				jTime: forTime,
-				uId: openid
+				uId: openid,
+				uName: data.uName,
+				uAvatar: data.uAvatar
 			}
 		}).then(res => {
 			if (res.stats.updated == 1) return true;
@@ -67,7 +68,7 @@ var functions = {
 		let fTime = new Date().toLocaleString('chinese', { hour12: false });
 		return db.collection('order').where({ _id: data.id }).update({
 			data: {
-				state: 3,
+				state: 2,
 				fTime: fTime
 			}
 		}).then(res => {
@@ -76,8 +77,49 @@ var functions = {
 		})
 	},
 	getData: (data, openid) => {
-		return db.collection('order').where({ state: data.state }).get().then(res => {
+		return db.collection('order').where(
+		_.and([
+			{ state: data.state },
+			_.or([
+				{ pId: openid },
+				{ uId: openid }
+			])
+		])
+		).get().then(res => {
 			return res.data;
 		})
 	},
+	getCurrent: (data, openid) => {
+		return db.collection('order').where({
+			cId: data.cId,
+			state: data.state
+		}).get().then(res => {
+			return res.data;
+		})
+	},
+	addRate: (data, openid) => {
+		let reqData = {
+			oId: data.oId,
+			cId: data.cId,
+			pId: openid,
+			pName: data.pName,
+			uId: data.uId,
+			uName: data.uName,
+			rate: data.rate,
+			content: data.content
+		}
+		return db.collection('rate').add({ data: reqData }).then(res => {
+			return true;
+		})
+	},
+	getRate: (data, openid) => {
+		return db.collection('rate').where({ oId: data.oId }).get().then(res => {
+			return res.data[0];
+		})
+	},
+	getRates: (data, openid) => {
+		return db.collection('rate').where({ uId: data.id }).get().then(res => {
+			return res.data;
+		})
+	}
 }

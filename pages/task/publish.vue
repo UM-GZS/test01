@@ -143,7 +143,8 @@
 						title: this.title,
 						content: this.content,
 						time: this.date + ' ' + this.time,
-						pNmae: this.userInfo.nickName,
+						pName: this.userInfo.nickName,
+						pAvatar: this.userInfo.avatarUrl,
 						cId: cId
 					}
 				}).then(res => {

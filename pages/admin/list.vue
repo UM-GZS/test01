@@ -8,13 +8,13 @@
 		</view>
 		<view class="list">
 			<view class="list-item" v-for="(item, index) in applyList" :key="index">
-				<view class="list-info">
+				<view class="list-info" @click="toUser(item.aId)">
 					<image :src="item.aAvatar"></image>
 					<text>{{item.aName}}</text>
 				</view>
-				<view class="list-button" v-if="item.state == 0">
-					<view class="list-refuse" @click="changeState(item._id, 2)">拒绝</view>
-					<view class="list-pass" @click="changeState(item._id, 1)">通过</view>
+				<view class="list-button">
+					<view class="list-refuse" @click="changeState(item._id, 2)" v-if="item.state == 0 || item.state == 1">拒绝</view>
+					<view class="list-pass" @click="changeState(item._id, 1)" v-if="item.state == 0 || item.state == 2">通过</view>
 				</view>
 			</view>
 		</view>
@@ -59,8 +59,14 @@
 				}).catch(console.error)
 			},
 			tabSelect(index) {
+				if (this.tabIndx == index) return;
 				this.tabIndx = index;
 				this.getApplyList(index);
+			},
+			toUser(id) {
+				uni.navigateTo({
+					url: `/pages/info/info?id=${id}`
+				})
 			},
 			changeState(id, state) {
 				uni.showLoading({
@@ -78,7 +84,7 @@
 					if (res.result) {
 						this.getApplyList(0);
 						uni.showToast({
-							title: '修改成功',
+							title: '提交成功',
 							icon: 'none'
 						})
 					}

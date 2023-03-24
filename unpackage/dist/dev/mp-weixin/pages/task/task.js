@@ -185,49 +185,52 @@ exports.default = void 0;
 var _default = {
   data: function data() {
     return {
-      tabList: [{
-        name: '已发布',
-        key: 0
-      }, {
-        name: '已接单',
-        key: 2
-      }, {
-        name: '进行中',
-        key: 2
-      }, {
-        name: '已完成',
-        key: 3
-      }],
+      tabList: ['已发布', '进行中', '已完成'],
       tabIndx: 0,
       dataList: [],
-      userInfo: null
+      userInfo: null,
+      cId: null
     };
   },
   onLoad: function onLoad(option) {
     var user = uni.getStorageSync('userInfo');
     this.userInfo = user;
-    if (option.key) {
-      this.tabIndx = option.key;
-      this.getList();
-    }
+    this.tabIndx = Number(option.key);
+    this.cId = option.cId == 'null' ? null : option.cId;
+  },
+  onShow: function onShow() {
+    if (this.cId) this.getData();else this.getList();
   },
   methods: {
     getList: function getList() {
       var _this = this;
-      var state = this.tabList[this.tabIndx].key;
       wx.cloud.callFunction({
         name: 'order',
         data: {
           funName: 'getData',
-          state: state
+          state: this.tabIndx
         }
       }).then(function (res) {
         _this.dataList = res.result;
       }).catch(console.error);
     },
+    getData: function getData() {
+      var _this2 = this;
+      wx.cloud.callFunction({
+        name: 'order',
+        data: {
+          funName: 'getCurrent',
+          state: this.tabIndx,
+          cId: this.cId
+        }
+      }).then(function (res) {
+        _this2.dataList = res.result;
+      }).catch(console.error);
+    },
     tabSelect: function tabSelect(index) {
+      if (this.tabIndx == index) return;
       this.tabIndx = index;
-      this.getList();
+      if (this.cId) this.getData();else this.getList();
     },
     toDetail: function toDetail(id) {
       uni.navigateTo({

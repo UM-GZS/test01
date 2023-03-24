@@ -80,7 +80,8 @@
 						area: this.area,
 						name: this.name,
 						image: this.image,
-						nickName: this.userInfo.nickName
+						nickName: this.userInfo.nickName,
+						avatar: this.userInfo.avatarUrl
 					}
 				}).then(res => {
 					uni.hideLoading();

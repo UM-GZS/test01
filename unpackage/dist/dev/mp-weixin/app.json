@@ -10,7 +10,9 @@
     "pages/verified/verified",
     "pages/admin/admin",
     "pages/admin/list",
-    "pages/chat/detail"
+    "pages/chat/detail",
+    "pages/mine/detail",
+    "pages/info/info"
   ],
   "subPackages": [],
   "window": {

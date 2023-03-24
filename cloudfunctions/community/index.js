@@ -21,7 +21,8 @@ var functions = {
 			area: data.area,
 			image: data.image,
 			_openid: openid,
-			nickName: data.nickName
+			nickName: data.nickName,
+			avatar: data.avatar
 		}
 		return db.collection('community').add({ data: reqData }).then(res => {
 			return db.collection('user').where({ _openid: openid }).update({
@@ -38,6 +39,11 @@ var functions = {
 	},
 	detail: (data, openid) => {
 		return db.collection('community').where({ _id: data.id }).get().then(res => {
+			return res.data[0];
+		})
+	},
+	getCommunity: (data, openid) => {
+		return db.collection('community').where({ _openid: openid }).get().then(res => {
 			return res.data[0];
 		})
 	},

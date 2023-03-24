@@ -1,10 +1,10 @@
 <template>
 	<view>
 		<view class="head">
-			<view class="head-avatar">
+			<view class="head-avatar" @click="toUser">
 				<image :src="userInfo.avatarUrl || '../../static/logo.png'"></image>
 			</view>
-			<view class="head-info">
+			<view class="head-info" @click="toNav('/pages/mine/detail')">
 				<view class="head-name" @click="toLogin">{{userInfo.nickName || '点击登录' }}</view>
 				<view class="head-text" v-show="userInfo">
 					<text>{{roleList[userInfo.role]}}</text>
@@ -19,10 +19,31 @@
 			</view>
 		</view>
 		<view class="nav">
-			<view class="nav-item" v-for="(item, index) in navList" :key="index" @click="toNav(index, item.url)" v-if="index != 2 || userInfo.role == 1">
+			<view class="nav-item" @click="toNav('/pages/verified/verified')">
 				<view class="nav-info">
-					<image :src="item.icon"></image>
-					<text>{{item.name}}</text>
+					<image src="../../static/images/common/verified.png"></image>
+					<text>实名认证</text>
+				</view>
+				<image class="nav-more" src="../../static/images/common/more.png"></image>
+			</view>
+			<view class="nav-item" @click="toNav('/pages/admin/admin')" v-if="!userInfo.role">
+				<view class="nav-info">
+					<image src="../../static/images/common/admin.png"></image>
+					<text>申请社区管理员</text>
+				</view>
+				<image class="nav-more" src="../../static/images/common/more.png"></image>
+			</view>
+			<view class="nav-item" @click="toNav('/pages/admin/list')" v-if="userInfo.role">
+				<view class="nav-info">
+					<image src="../../static/images/common/admin.png"></image>
+					<text>社区成员</text>
+				</view>
+				<image class="nav-more" src="../../static/images/common/more.png"></image>
+			</view>
+			<view class="nav-item" @click="toTask(0, community._id)" v-if="userInfo.role">
+				<view class="nav-info">
+					<image src="../../static/images/common/record.png"></image>
+					<text>社区订单</text>
 				</view>
 				<image class="nav-more" src="../../static/images/common/more.png"></image>
 			</view>
@@ -39,39 +60,26 @@
 			return {
 				userInfo: null,
 				roleList: ['普通用户', '社区管理员'],
+				community: {},
 				dataList: [{
 					name: '已发布',
 					index: 0,
 					key: 'order0'
 				}, {
-					name: '已接单',
+					name: '进行中',
 					index: 1,
 					key: 'order1'
 				}, {
-					name: '进行中',
+					name: '已完成',
 					index: 2,
 					key: 'order2'
-				}, {
-					name: '已完成',
-					index: 3,
-					key: 'order3'
-				}],
-				navList: [{
-					icon: '../../static/images/common/verified.png',
-					name: '实名认证',
-					url: '/pages/verified/verified'
-				}, {
-					icon: '../../static/images/common/admin.png',
-					name: '申请社区管理员',
-					url: '/pages/admin/admin'
-				}, {
-					icon: '../../static/images/common/record.png',
-					name: '申请列表',
-					url: '/pages/admin/list'
 				}]
 			}
 		},
 		onLoad() {
+			this.getCommunity();
+		},
+		onShow() {
 			this.getUserInfo();
 		},
 		methods: {
@@ -86,25 +94,34 @@
 					}
 				}).catch(console.error)
 			},
-			toTask(key) {
+			getCommunity() {
+				wx.cloud.callFunction({
+					name: 'community',
+					data: { funName: 'getCommunity' }
+				}).then(res => {
+					this.community = res.result;
+				}).catch(console.error)
+			},
+			toTask(key, id = null) {
 				if (!this.userInfo) return uni.showToast({
 					title: '请先登录账号',
 					icon: 'none'
 				})
 				uni.navigateTo({
-					url: '/pages/task/task?key=' + key
+					url: `/pages/task/task?key=${key}&cId=${id}`
 				})
 			},
-			toNav(index, url) {
+			toNav(url) {
 				if (!this.userInfo) return uni.showToast({
 					title: '请先登录账号',
 					icon: 'none'
 				})
-				if (index == 1 && this.userInfo.role == 1 ) return uni.showToast({
-					title: '你已是社区管理员',
-					icon: 'none'
-				})
 				uni.navigateTo({ url })
+			},
+			toUser() {
+				uni.navigateTo({
+					url: `/pages/info/info?id=${this.userInfo._openid}`
+				})
 			},
 			toLogin() {
 				if (this.userInfo) return;

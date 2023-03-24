@@ -41,8 +41,7 @@ var functions = {
 			isReal: false,
 			order0: 0,
 			order1: 0,
-			order2: 0,
-			order3: 0
+			order2: 0
 		}
 		return db.collection('user').add({ data: reqData }).then(res => {
 			return functions.userInfo(data, openid);
@@ -64,6 +63,22 @@ var functions = {
 			}
 		}).then(res => {
 			return functions.userInfo(data, openid);
+		})
+	},
+	upUserInfo: (data, openid) => {
+		return db.collection('user').where({ _openid: openid }).update({
+			data: data.reqData
+		}).then(res => {
+			return functions.userInfo(data, openid);
+		})
+	},
+	getUser: (data) => {
+		return db.collection('user').where({
+			_openid: data.id
+		}).get().then(res => {
+			let resData = res.data;
+			if (resData.length) return resData[0];
+			else return false;
 		})
 	}
 }

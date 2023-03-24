@@ -102,6 +102,15 @@ var render = function () {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
+  var g0 = _vm.dataList.length
+  _vm.$mp.data = Object.assign(
+    {},
+    {
+      $root: {
+        g0: g0,
+      },
+    }
+  )
 }
 var recyclableRender = false
 var staticRenderFns = []
@@ -141,6 +150,10 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
+//
+//
+//
+//
 //
 //
 //
@@ -227,73 +240,14 @@ var _default = {
         url: '/pages/task/publish'
       });
     },
-    toCommunity: function toCommunity(item) {
-      var _this3 = this;
+    toCommunity: function toCommunity(id) {
       if (!this.userInfo) return uni.showToast({
         title: '请先登录账号',
         icon: 'none'
       });
-      wx.cloud.callFunction({
-        name: 'community',
-        data: {
-          funName: 'checkUser',
-          cId: item._id
-        }
-      }).then(function (res) {
-        var obj = res.result;
-        if (obj.aId) {
-          if (obj.state == 0) {
-            return uni.showToast({
-              title: '审核中...',
-              icon: 'none'
-            });
-          }
-          if (obj.state == 2) {
-            return uni.showToast({
-              title: '审核不通过',
-              icon: 'none'
-            });
-          }
-          uni.navigateTo({
-            url: '/pages/community/community?id=' + item._id
-          });
-        } else {
-          uni.showModal({
-            title: '提示',
-            content: '您还没有加入社区，是否申请加入？',
-            success: function success(res) {
-              if (res.confirm) {
-                _this3.joinCommunity(item);
-              } else if (res.cancel) {
-                console.log('用户点击取消');
-              }
-            }
-          });
-        }
-      }).catch(console.error);
-    },
-    joinCommunity: function joinCommunity(item) {
-      uni.showLoading({
-        title: '请求中...'
+      uni.navigateTo({
+        url: '/pages/community/community?id=' + id
       });
-      wx.cloud.callFunction({
-        name: 'community',
-        data: {
-          funName: 'joinCommunity',
-          cId: item._id,
-          uId: item._openid,
-          aName: this.userInfo.nickName,
-          aAvatar: this.userInfo.avatarUrl
-        }
-      }).then(function (res) {
-        uni.hideLoading();
-        if (res.result) {
-          uni.showToast({
-            title: '提交成功',
-            icon: 'none'
-          });
-        }
-      }).catch(console.error);
     }
   }
 };

@@ -2,17 +2,17 @@
 	<view>
 		<view class="head">
 			<view class="head-area">{{cObj.area}}</view>
-			<image :src="cObj.image"></image>
+			<image :src="cObj.image" mode="aspectFill"></image>
 			<view class="head-info">
 				<text class="head-name">{{cObj.name}}</text>
-				<view class="head-button">
+				<view class="head-button" @click="toChat">
 					<text>社区管理员：{{cObj.nickName}}</text>
 					<image src="../../static/images/common/chatw.png"></image>
 				</view>
 			</view>
 		</view>
 		<view class="list" v-show="orderList.length">
-			<view class="list-item" v-for="(item, index) in orderList" :key="index" @click="toDetail(item._id)">
+			<view class="list-item" v-for="(item, index) in orderList" :key="index" @click="toDetail(item)">
 				<view class="list-icon">
 					<image src="../../static/images/common/task.png"></image>
 				</view>
@@ -42,12 +42,19 @@
 			return {
 				cId: null,
 				cObj: {},
-				orderList: []
+				orderList: [],
+				userInfo: null
 			};
 		},
 		onLoad(option) {
-			if (option.id) this.cId = option.id;
-			this.getDetail();
+			let user = uni.getStorageSync('userInfo');
+			this.userInfo = user;
+			if (option.id) {
+				this.cId = option.id;
+				this.getDetail();
+			}
+		},
+		onShow() {
 			this.getList();
 		},
 		methods: {
@@ -73,9 +80,73 @@
 					this.orderList = res.result;
 				}).catch(console.error)
 			},
-			toDetail(id) {
+			toDetail(item) {
+				wx.cloud.callFunction({
+					name: 'community',
+					data: {
+						funName: 'checkUser',
+						cId: item.cId
+					}
+				}).then(res => {
+					let obj = res.result;
+					if (obj.aId) {
+						if (obj.state == 0) {
+							return uni.showToast({
+								title: '审核中...',
+								icon: 'none'
+							})
+						}
+						if (obj.state == 2) {
+							return uni.showToast({
+								title: '审核不通过',
+								icon: 'none'
+							})
+						}
+						uni.navigateTo({
+							url: '/pages/task/detail?id=' + item._id
+						})
+					} else {
+						uni.showModal({
+							title: '提示',
+							content: '请加入社区',
+							success: (res) => {
+								if (res.confirm) {
+									this.joinCommunity();
+								} else if (res.cancel) {
+									console.log('用户点击取消');
+								}
+							}
+						});
+					}
+				}).catch(console.error)
+			},
+			joinCommunity() {
+				uni.showLoading({
+					title: '请求中...'
+				})
+				wx.cloud.callFunction({
+					name: 'community',
+					data: {
+						funName: 'joinCommunity',
+						cId: this.cObj._id,
+						uId: this.cObj._openid,
+						aName: this.userInfo.nickName,
+						aAvatar: this.userInfo.avatarUrl
+					}
+				}).then(res => {
+					uni.hideLoading();
+					if (res.result) {
+						uni.showToast({
+							title: '提交成功',
+							icon: 'none'
+						})
+					}
+				}).catch(console.error)
+			},
+			toChat() {
+				let obj = this.cObj;
 				uni.navigateTo({
-					url: '/pages/task/detail?id=' + id
+					url: `/pages/chat/detail?tId=${obj._openid}&tName=${obj.nickName}&tAvatar=${obj.avatar}` 
 				})
 			}
 		}
